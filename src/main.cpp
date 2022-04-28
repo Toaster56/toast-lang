@@ -1,16 +1,11 @@
-#include <iostream>
-#include <string>
-#include "compiler/lexer.hpp"
-
-using namespace ToastLang;
+#include "compiler/parser.hpp"
 
 std::string src = 
-    "func -> {\n"
-    "   < 1\n"
-    "}\n";
+    "fn main a b {"
+    "   < a + b"
+    "}";
 
 int main() {
-    Lexer lexer = Lexer(src);
-    std::string lexed = lexer.lex();
+    ToastLang::Parser parser = ToastLang::Parser(std::move(src));
     return 0;
 }
