@@ -1,14 +1,21 @@
 #include <string>
 
-#include "compiler/parser.hpp"
+#include <fstream>
 
-std::string src = 
-    "fn main a b {"
-    "   a + b"
-    "}";
+#include "compiler/codegen.hpp"
 
 int main() {
-    ToastLang::Parser parser = ToastLang::Parser(src);
+    std::fstream srcFile;
+    srcFile.open("./src.t", std::ios::in);
+    std::string src;
+    if (srcFile.is_open()) {
+        std::string srclbl;
+        while (std::getline(srcFile, srclbl)) src += srclbl;
+        srcFile.close();
+    }
+
+    std::cout << src << std::endl;
+    ToastLang::CodeGen gen = ToastLang::CodeGen(src);
 
     return 0;
 }

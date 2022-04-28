@@ -46,7 +46,7 @@ int ToastLang::Lexer::getNext() {
         
         if (IdentifierString == "fn")
             return tok_func;
-        
+            
         return tok_identifier;
     }
 

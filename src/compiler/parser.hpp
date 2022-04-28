@@ -106,16 +106,17 @@ std::unique_ptr<AST::ExprAST> ToastLang::Parser::ParsePrimary() {
 std::map<char, int> BinopPrecedence;
 
 int ToastLang::Parser::GetTokPrecedence() {
-    if (!isascii(CurrentToken))
+    if (!isascii(lexer.CurrentChar))
         return -1;
             
-    int TokenPrec = BinopPrecedence[CurrentToken];
+    int TokenPrec = BinopPrecedence[lexer.CurrentChar];
     if (TokenPrec <= 0) return -1;
     return TokenPrec;
 }
 
 std::unique_ptr<AST::ExprAST> ToastLang::Parser::ParseExpression() {
     auto LHS = ParsePrimary();
+    
     if (!LHS)
         return nullptr;
 
@@ -187,23 +188,36 @@ std::unique_ptr<AST::FunctionAST> ToastLang::Parser::ParseTopLevelExpr() {
 }
 
 void ToastLang::Parser::HandleDefinition() {
-    if (ParseFunction())
-        std::cout << "Parsed a definition" << std::endl;
-    else
+    if (auto FnAST = ParseFunction()) {
+        if (auto *FnIR = FnAST->codegen()) {
+            std::cout << "idfk created function ig:";
+            FnIR->print(llvm::errs());
+            std::cout << std::endl;
+        }
+    } else {
         getNextToken();
+    }
 }
 
 void ToastLang::Parser::HandleTopLevelExpression() {
-    if (ParseTopLevelExpr())
-        std::cout << "Parsed a top-level expression";
-    else
+    if (auto FnAST = ParseTopLevelExpr()) {
+    std::cout << "test" << std::endl;
+        if (auto *FnIR = FnAST->codegen()) {
+    std::cout << "test" << std::endl;
+            std::cout << "Read top-level expression:";
+            FnIR->print(llvm::errs());
+            std::cout << std::endl;
+
+            FnIR->eraseFromParent();
+        }
+    } else {
         getNextToken();
+    }
 }
 
 void ToastLang::Parser::mainLoop() {
     getNextToken();
     while (1) {
-        std::cout << CurrentToken << lexer.IdentifierString << lexer.Iteration << std::endl;
         switch (CurrentToken) {
             case tok_eof:
                 return;
@@ -226,5 +240,8 @@ ToastLang::Parser::Parser(std::string src): lexer(ToastLang::Lexer(src)) {
     BinopPrecedence['-'] = 20;
     BinopPrecedence['*'] = 40;
 
+    AST::init();
     mainLoop();
+
+    AST::getTheModule()->print(llvm::errs(), nullptr);
 }
