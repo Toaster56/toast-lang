@@ -1,10 +1,12 @@
-#include "lexer.hpp"
-#include "AST.hpp"
-
-#include <string>
-#include <memory>
 #include <vector>
+#include <memory>
+#include <string>
 #include <map>
+
+#include <iostream>
+
+#include "AST.hpp"
+#include "lexer.hpp"
 
 namespace ToastLang {
     class Parser {
@@ -22,6 +24,9 @@ namespace ToastLang {
         std::unique_ptr<AST::FunctionAST> ParseFunction();
 
         std::unique_ptr<AST::FunctionAST> ParseTopLevelExpr();
+
+        void HandleDefinition();
+        void HandleTopLevelExpression();
 
         void mainLoop();
 
@@ -69,7 +74,7 @@ std::unique_ptr<AST::ExprAST> ToastLang::Parser::ParseIdentifierExpr() {
     if (CurrentToken != ')') {
         while (1) {
             if (auto Arg = ParseExpression())
-                Args.push_back(Arg);
+                Args.push_back(std::move(Arg));
             else
                 return nullptr;
             
@@ -173,21 +178,43 @@ std::unique_ptr<AST::FunctionAST> ToastLang::Parser::ParseFunction() {
 }
 
 std::unique_ptr<AST::FunctionAST> ToastLang::Parser::ParseTopLevelExpr() {
-  if (auto E = ParseExpression()) {
-    auto Proto = std::make_unique<AST::PrototypeAST>("", std::vector<std::string>());
-    return std::make_unique<AST::FunctionAST>(std::move(Proto), std::move(E));
-  }
+    if (auto E = ParseExpression()) {
+        auto Proto = std::make_unique<AST::PrototypeAST>("__anon_expr", std::vector<std::string>());
+        return std::make_unique<AST::FunctionAST>(std::move(Proto), std::move(E));
+    }
 
-  return nullptr;
+    return nullptr;
+}
+
+void ToastLang::Parser::HandleDefinition() {
+    if (ParseFunction())
+        std::cout << "Parsed a definition" << std::endl;
+    else
+        getNextToken();
+}
+
+void ToastLang::Parser::HandleTopLevelExpression() {
+    if (ParseTopLevelExpr())
+        std::cout << "Parsed a top-level expression";
+    else
+        getNextToken();
 }
 
 void ToastLang::Parser::mainLoop() {
+    getNextToken();
     while (1) {
+        std::cout << CurrentToken << lexer.IdentifierString << lexer.Iteration << std::endl;
         switch (CurrentToken) {
             case tok_eof:
                 return;
             case ';':
                 getNextToken();
+                break;
+            case tok_func:
+                HandleDefinition();
+                break;
+            default:
+                HandleTopLevelExpression();
                 break;
         }
     }

@@ -1,11 +1,11 @@
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace AST {
     class ExprAST {
         public:
-            virtual ~ExprAST() = default;
+            virtual ~ExprAST() {};
     };
 
     class NumberExprAST: public ExprAST {
@@ -19,15 +19,15 @@ namespace AST {
         std::string Name;
 
         public:
-            VariableExprAST(std::string Name): Name(Name) {}
+            VariableExprAST(const std::string &Name): Name(Name) {}
     };
 
     class BinaryExprAST: public ExprAST {
         char Op;
-        std::unique_ptr<ExprAST> RHS, LHS;
+        std::unique_ptr<ExprAST> LHS, RHS;
 
         public:
-            BinaryExprAST(char Op, std::unique_ptr<ExprAST> RHS, std::unique_ptr<ExprAST> LHS): Op(Op), RHS(std::move(RHS)), LHS(std::move(LHS)) {}
+            BinaryExprAST(char Op, std::unique_ptr<ExprAST> LHS, std::unique_ptr<ExprAST> RHS): Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
     };
 
     class CallExprAST: public ExprAST {
@@ -35,7 +35,7 @@ namespace AST {
         std::vector<std::unique_ptr<ExprAST>> Args;
 
         public:
-            CallExprAST(std::string CallName, std::vector<std::unique_ptr<ExprAST>> Args): CallName(CallName), Args(std::move(Args)) {}
+            CallExprAST(const std::string &CallName, std::vector<std::unique_ptr<ExprAST>> Args): CallName(CallName), Args(std::move(Args)) {}
     };
 
     class PrototypeAST {
@@ -44,7 +44,7 @@ namespace AST {
 
         public:
             PrototypeAST(const std::string &Name, std::vector<std::string> Args): Name(Name), Args(std::move(Args)) {};
-            const std::string &getName() { return Name; };
+            const std::string &getName() const { return Name; };
     };
 
     class FunctionAST {
