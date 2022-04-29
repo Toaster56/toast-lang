@@ -1,0 +1,23 @@
+{
+  "name": "toast-lang",
+  "version": "0.0.0",
+  "description": "idk what im doing",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Toaster56/toast-lang.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Toaster56/toast-lang/issues"
+  },
+  "homepage": "https://github.com/Toaster56/toast-lang#readme",
+  "dependencies": {
+    "fs": "^0.0.1-security"
+  }
+}
