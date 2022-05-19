@@ -1,0 +1,14 @@
+make.exe --dry-run --keep-going --print-directory
+make: Entering directory '/c/Users/toast/Desktop/toast-lang'
+g++ -c src/ast.cpp -o src/ast.o
+ 
+g++ -c src/main.cpp -o src/main.o
+ 
+g++ -c src/parser.cpp -o src/parser.o
+ 
+g++ -c src/util.cpp -o src/util.o
+g++  src/ast.o src/main.o src/parser.o src/util.o include/ast.h include/parser.h include/util.h -o t
+./t -c test.to
+ 
+make: Leaving directory '/c/Users/toast/Desktop/toast-lang'
+ 

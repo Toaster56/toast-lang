@@ -1,0 +1,10 @@
+import IO
+
+fn sum = int num1, int num2 -> int {
+    < num1 + num2
+}
+
+fn main = array argv -> int {
+    IO.print("Hello, World!")
+    < 0
+}
